@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>THUGKEED AI APP BUILDER</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Courier New', monospace;
+      background: #000;
+      color: #00ff99;
+      overflow: hidden;
+    }
+
+    canvas#matrix {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 0;
+      width: 100%;
+      height: 100%;
+      background: black;
+    }
+
+    .terminal-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .terminal-lines {
+      color: #00ff99;
+      font-size: 12px;
+      opacity: 0.06;
+      white-space: pre;
+      animation: scroll 30s linear infinite;
+      position: absolute;
+      top: 100%;
+    }
+
+    @keyframes scroll {
+      from { top: 100%; }
+      to { top: -100%; }
+    }
+
+    .center {
+      max-width: 600px;
+      margin: 60px auto;
+      padding: 40px;
+      text-align: center;
+      z-index: 2;
+      position: relative;
+      background: rgba(0, 0, 0, 0.75);
+      border-radius: 10px;
+      box-shadow: 0 0 20px #00ff99;
+    }
+
+    h2 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 28px;
+      margin-bottom: 30px;
+      color: #00ff99;
+      letter-spacing: 1px;
+    }
+
+    input, textarea, button {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid #00ff99;
+      background: #111;
+      color: #00ff99;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    button:hover {
+      background: #00ff99;
+      color: #000;
+      cursor: pointer;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    #codeOutput {
+      background: #111;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 20px;
+      white-space: pre-wrap;
+      text-align: left;
+    }
+
+    #adminPanel {
+      margin-top: 40px;
+      border-top: 1px dashed #00ff99;
+      padding-top: 20px;
+    }
+
+    .password-wrapper {
+      position: relative;
+      width: 100%;
+    }
+
+    #password {
+      padding-right: 50px;
+    }
+
+    #togglePwd {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: transparent;
+      border: none;
+      color: #00ff99;
+      cursor: pointer;
+      font-size: 14px;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Matrix Background Canvas -->
+  <canvas id="matrix"></canvas>
+
+  <!-- Hacker Terminal Overlay -->
+  <div class="terminal-bg">
+    <div class="terminal-lines" id="terminalLines">
+      // Initializing THUGKEED AI SYSTEM...
+      // Bypassing firewall...
+      // Loading synthetic neural mesh...
+      // Deploying builder interface...
+      // Admin key accepted: THUGKEED-MD
+      // AI module injected ✔
+      // Interface online...
+      // Awaiting user authentication...
+      // THUGKEED AI READY.
+    </div>
+  </div>
+
+  <div class="center">
+    <!-- LOGIN -->
+    <div id="loginBox">
+      <h2>LOGIN TO THUGKEED AI</h2>
+      <input type="email" id="email" placeholder="Email Address" />
+      <div class="password-wrapper">
+        <input type="password" id="password" placeholder="Password" />
+        <button id="togglePwd">Show</button>
+      </div>
+      <button onclick="login()">Login</button>
+    </div>
+
+    <!-- BUILDER UI -->
+    <div id="builderBox" class="hidden">
+      <h2>🧠 Describe your App</h2>
+      <textarea id="prompt" placeholder="e.g. Make a To-Do app with dark mode..."></textarea>
+      <button onclick="generateApp()">Generate App</button>
+      <div id="codeOutput"></div>
+    </div>
+
+    <!-- ADMIN PANEL -->
+    <div id="adminPanel" class="hidden">
+      <h3>👑 Admin Panel</h3>
+      <p>Access to manage users, view prompts, etc. (coming soon...)</p>
+    </div>
+  </div>
+
+  <!-- Matrix Animation Script -->
+  <script>
+    const canvas = document.getElementById("matrix");
+    const ctx = canvas.getContext("2d");
+
+    canvas.height = window.innerHeight;
+    canvas.width = window.innerWidth;
+
+    const letters = "アァイゥエオカキクケコサシスセソタチツテトナニヌネノ0123456789THUGKEEDAI";
+    const fontSize = 14;
+    const columns = canvas.width / fontSize;
+    const drops = Array.from({ length: columns }).fill(1);
+
+    function drawMatrix() {
+      ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "#00ff99";
+      ctx.font = fontSize + "px monospace";
+
+      for (let i = 0; i < drops.length; i++) {
+        const text = letters.charAt(Math.floor(Math.random() * letters.length));
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+          drops[i] = 0;
+        }
+        drops[i]++;
+      }
+    }
+
+    setInterval(drawMatrix, 33);
+
+    // Login / Generator logic
+    let currentUserEmail = "";
+
+    function login() {
+      const email = document.getElementById("email").value.trim().toLowerCase();
+      const password = document.getElementById("password").value;
+
+      if (email === "" || password === "") {
+        alert("Enter both email and password.");
+        return;
+      }
+
+      currentUserEmail = email;
+
+      document.getElementById("loginBox").classList.add("hidden");
+      document.getElementById("builderBox").classList.remove("hidden");
+
+      if (email === "thugkeed.admin@gmail.com") {
+        document.getElementById("adminPanel").classList.remove("hidden");
+      }
+    }
+
+    async function generateApp() {
+      const prompt = document.getElementById("prompt").value;
+      const codeOutput = document.getElementById("codeOutput");
+      codeOutput.innerText = "⏳ Generating...";
+
+      try {
+        const res = await fetch('/generate-app', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt, email: currentUserEmail })
+        });
+
+        const data = await res.json();
+        codeOutput.innerText = data.code || "⚠️ No code generated.";
+      } catch (err) {
+        codeOutput.innerText = "⚠️ Error contacting server.";
+      }
+    }
+
+    document.getElementById('togglePwd').addEventListener('click', () => {
+      const pwdInput = document.getElementById('password');
+      const toggleBtn = document.getElementById('togglePwd');
+      if (pwdInput.type === 'password') {
+        pwdInput.type = 'text';
+        toggleBtn.textContent = 'Hide';
+      } else {
+        pwdInput.type = 'password';
+        toggleBtn.textContent = 'Show';
+      }
+    });
+  </script>
+</body>
+</html>
